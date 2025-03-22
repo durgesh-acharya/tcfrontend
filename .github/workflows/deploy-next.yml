@@ -1,0 +1,35 @@
+name: Deploy Next.js to VPS
+
+on:
+  push:
+    branches:
+      - main  # You can change this to your default branch if it's not 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y nodejs npm
+        npm install
+
+    - name: Build Next.js Project
+      run: npm run build
+
+    - name: Deploy to VPS
+      run: |
+        ssh -o StrictHostKeyChecking=no root@103.168.18.92 -p 7576 'cd /var/www/tcfrontend && git pull origin main && npm install && npm run build && pm2 restart nextjs-app'
+
+    - name: Clean up
+      run: pm2 delete nextjs-app
