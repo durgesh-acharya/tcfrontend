@@ -1,38 +1,50 @@
-name: Deploy Next.js Project
+name: Deploy Next.js to VPS
 
 on:
   push:
     branches:
-      - main  # Trigger deployment only on push to the main branch
+      - main  # Adjust this to your branch if needed
 
 jobs:
-  build_and_deploy:
-    runs-on: ubuntu-latest  # Using the latest Ubuntu runner
+  deploy:
+    runs-on: ubuntu-latest  # The job will run on a virtual Ubuntu environment
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2  # Checks out your code repository
+    - name: Checkout repository
+      uses: actions/checkout@v2  # This will check out your repository's code
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Set up SSH key
+      uses: webfactory/ssh-agent@v0.5.3  # Sets up SSH authentication
       with:
-        node-version: '16'  # Set the Node.js version (use LTS version or your preferred version)
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Add the private SSH key from GitHub Secrets
 
-    - name: Install dependencies
-      run: npm install  # Installs the dependencies defined in package.json
-
-    - name: Build the Next.js app
-      run: npm run build  # Builds the Next.js app (ensure your build script is configured in package.json)
-
-    - name: Deploy to your server
+    - name: Deploy to VPS
       run: |
-        # SSH into your server and deploy (update with your actual deployment steps)
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} root@103.168.18.92 -p 7576 << 'EOF'
-          cd /var/www/tcfrontend
-          git pull origin main  # Pull latest changes from the repository
-          npm install           # Install dependencies
-          npm run build         # Build the project
-          pm2 restart your-app # Restart the app using PM2 (optional)
+        # Ensure SSH can connect without strict host key checking
+        ssh -o StrictHostKeyChecking=no root@103.168.18.92 -p 7576 << 'EOF'
+          # Source NVM to ensure the correct Node environment is loaded
+          source /root/.nvm/nvm.sh
+          nvm use 22.14.0  # Ensure the correct Node.js version is used
+
+          # Navigate to the Next.js app directory
+          cd /var/www/tcfrontend || exit 1  # Ensure the directory exists
+
+          # Stash any local changes to avoid merge conflicts
+          git stash || true  # 'true' ensures it doesn't fail if there's nothing to stash
+
+          # Pull the latest changes from GitHub
+          git pull origin main
+
+          # Optionally, apply the stashed changes (if any)
+          git stash pop || true
+
+          # Install or update dependencies
+          npm install
+
+          # Build the Next.js app
+          npm run build
+
+          # Restart the app using pm2 (adjust the pm2 name if necessary)
+          /root/.nvm/versions/node/v22.14.0/bin/pm2 restart nextjs-app || /root/.nvm/versions/node/v22.14.0/bin/pm2 start npm --name "nextjs-app" -- start
+
         EOF
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Use GitHub Secrets to securely store your private SSH key
