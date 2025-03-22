@@ -21,7 +21,7 @@ export default function Home() {
             .
           </li>
           <li className="tracking-[-.01em]">
-       Travelers clan
+       Travelers clan 2.0
           </li>
         </ol>
 
