@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 const SearchInput: React.FC = () => {
   // List of locations to cycle through
-  const locations = ['Dubai', 'Paris', 'New York', 'Tokyo', 'Sydney'];
+  const locations = useMemo(() => ['Dubai', 'Paris', 'New York', 'Tokyo', 'Sydney'], []);
   const [currentLocation, setCurrentLocation] = useState(locations[0]);
   const [textIndex, setTextIndex] = useState(0); // To control typing animation
 
@@ -15,7 +15,7 @@ const SearchInput: React.FC = () => {
     }, 3000); // Change location every 3 seconds
 
     return () => clearInterval(interval);
-  }, [currentLocation]);
+  }, [currentLocation,locations]);
 
   useEffect(() => {
     const typingInterval = setInterval(() => {
