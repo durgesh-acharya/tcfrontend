@@ -108,7 +108,7 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
       <div className="relative overflow-hidden"> {/* Add overflow-hidden here */}
         <div
           ref={carouselRef} // Reference to the scrollable container
-          className="flex space-x-4 px-4"
+          className="flex space-x-4 px-4 hide-scrollbar"
           style={{ overflowX: 'auto', overflowY: 'hidden' }} // Ensuring no vertical scrollbar
         >
           {location.packages.slice(scrollIndex, scrollIndex + itemsToShow).map((pkg) => (

@@ -108,7 +108,7 @@ const LocationActivityCarousel: React.FC<{ location: Location }> = ({ location }
       <div className="relative overflow-hidden">
         <div
           ref={carouselRef} // Reference to the scrollable container
-          className="flex space-x-4 px-4"
+          className="flex space-x-4 px-4 hide-scrollbar"
         >
           {location.activities.slice(scrollIndex, scrollIndex + itemsToShow).map((act) => (
             <div key={act.activity_id} className="flex-none w-full sm:w-1/3 bg-white shadow-lg rounded-lg overflow-hidden">
