@@ -41,8 +41,11 @@ jobs:
           # Install or update dependencies
           npm install
 
-          # Build the Next.js app
+          # Run the build to generate .next/static
           npm run build
+
+          # Debugging step: Ensure .next/static is created
+          ls -R .next || exit 1  # List the contents of the .next directory for debugging
 
           # Restart the app using pm2 (adjust the pm2 name if necessary)
           /root/.nvm/versions/node/v22.14.0/bin/pm2 restart nextjs-app || /root/.nvm/versions/node/v22.14.0/bin/pm2 start npm --name "nextjs-app" -- start
