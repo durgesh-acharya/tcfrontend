@@ -3,9 +3,9 @@ import Image from 'next/image';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="relative w-full bg-gray-800 py-10 mt-24">
+    <footer className="relative w-full bg-black py-10 mt-24">
       {/* Full width background */}
-      <div className="absolute inset-0 bg-gray-800 z-10"></div>
+      <div className="absolute inset-0 bg-black z-10"></div>
 
       {/* Centered white box */}
       <div className="relative z-20 flex justify-center -mt-20 ">
