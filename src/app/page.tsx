@@ -2,6 +2,9 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HorizontalScroll from '@/components/HorizontalScroll';
+import Footer from '@/components/Footer';
+
+
 export default function Home() {
   //list of locations for horizontal scrrol
   const locations = [
@@ -83,6 +86,8 @@ export default function Home() {
     <>
      <Navbar />
      <HorizontalScroll locations={locations}/>
+     <Footer />
+
     </>
   );
 }
