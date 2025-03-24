@@ -71,7 +71,9 @@ const LocationActivityCarousel: React.FC<{ location: Location }> = ({ location }
   };
 
   const handleScroll = (direction: 'left' | 'right') => {
-    const maxIndex = location.activities.length - 3; // 3 packages visible at a time (this will change based on screen size)
+    const itemsToShow = windowWidth <= 640 ? 1 : 3; // Calculate how many items to show based on screen size
+    const maxIndex = location.activities.length - itemsToShow; // Calculate max index based on items to show
+
     let newIndex = scrollIndex;
 
     if (direction === 'right' && scrollIndex < maxIndex) {
@@ -83,7 +85,7 @@ const LocationActivityCarousel: React.FC<{ location: Location }> = ({ location }
     setScrollIndex(newIndex);
 
     // Calculate the scroll position for the new index
-    const targetPosition = newIndex * (carouselRef.current?.offsetWidth ?? 0) / (windowWidth <= 640 ? 1 : 3); // Adjust for responsiveness
+    const targetPosition = newIndex * (carouselRef.current?.offsetWidth ?? 0) / itemsToShow; // Adjust for responsiveness
     scrollToPosition(targetPosition);
   };
 
@@ -91,6 +93,8 @@ const LocationActivityCarousel: React.FC<{ location: Location }> = ({ location }
   if (!isClient) {
     return null; // Prevent rendering during SSR (Server-Side Rendering)
   }
+
+  const itemsToShow = windowWidth <= 640 ? 1 : 3; // Dynamically set items to show based on the screen width
 
   return (
     <div className="container mx-auto my-6">
@@ -101,12 +105,12 @@ const LocationActivityCarousel: React.FC<{ location: Location }> = ({ location }
         </div>
       </div>
 
-      <div className="relative overflow-hidden"> {/* Add overflow-hidden here */}
+      <div className="relative overflow-hidden">
         <div
           ref={carouselRef} // Reference to the scrollable container
           className="flex space-x-4 px-4"
         >
-          {location.activities.slice(scrollIndex, scrollIndex + (windowWidth <= 640 ? 1 : 3)).map((act) => (
+          {location.activities.slice(scrollIndex, scrollIndex + itemsToShow).map((act) => (
             <div key={act.activity_id} className="flex-none w-full sm:w-1/3 bg-white shadow-lg rounded-lg overflow-hidden">
               {/* Wrapper for the image with rounded corners */}
               <div className="w-full h-56 relative overflow-hidden rounded-t-lg">

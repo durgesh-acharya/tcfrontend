@@ -276,7 +276,7 @@ export default function Home() {
             {
             "activity_id" : 1,
             "activity_name" : "Universal Studios Singapore Tickets",
-            "imageurl" : "/images/14.jpg",
+            "imageurl" : "/images/4.jpg",
             "duration" : "8 hours",
             "actual_price" : "5897",
             "offer_price" : "5373",
@@ -285,7 +285,7 @@ export default function Home() {
         {
             "activity_id" : 2,
             "activity_name" : "Gardens By The Bay Tickets, Singapore",
-            "imageurl" : "/images/15.jpg",
+            "imageurl" : "/images/3.jpg",
             "duration" : "8 hours",
             "actual_price" : "5897",
             "offer_price" : "5373",
@@ -294,7 +294,7 @@ export default function Home() {
         {
             "activity_id" : 3,
             "activity_name" : "SEA Aquarium Singapore Tickets",
-            "imageurl" : "/images/16.jpg",
+            "imageurl" : "/images/2.jpg",
             "duration" : "8 hours",
             "actual_price" : "5897",
             "offer_price" : "5373",
@@ -303,12 +303,30 @@ export default function Home() {
         {
             "activity_id" : 4,
             "activity_name" : "Marina Bay Sands Skypark Observation Deck Tickets, Singapore",
-            "imageurl" : "/images/17.jpg",
+            "imageurl" : "/images/1.jpg",
             "duration" : "8 hours",
             "actual_price" : "5897",
             "offer_price" : "5373",   
             "rating" : 4.5
-        }
+        },
+        {
+          "activity_id" : 5,
+          "activity_name" : "Marina Bay Sands Skypark Observation Deck Tickets, Singapore",
+          "imageurl" : "/images/2.jpg",
+          "duration" : "8 hours",
+          "actual_price" : "5897",
+          "offer_price" : "5373",   
+          "rating" : 4.5
+      },
+      {
+        "activity_id" : 6,
+        "activity_name" : "Marina Bay Sands Skypark Observation Deck Tickets, Singapore",
+        "imageurl" : "/images/3.jpg",
+        "duration" : "8 hours",
+        "actual_price" : "5897",
+        "offer_price" : "5373",   
+        "rating" : 4.5
+    }
         ]
     }
   ];
