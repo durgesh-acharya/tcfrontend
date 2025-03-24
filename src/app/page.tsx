@@ -5,6 +5,7 @@ export default function Home() {
   return (
     <>
      <Navbar />
+     <h6>Under Development</h6>
     </>
   );
 }
