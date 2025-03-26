@@ -176,7 +176,7 @@ export default function Home() {
         "location_name" : "Singapore",
         "packages" : [
             {
-            "package_id" : 1,
+            "package_id" : 11,
             "package_name" : "Singapore and Bali Honeymoon Bliss | City Romance to Tropical Retreat",
             "imageurl" : "/images/14.jpg",
             "duration_id" : 1,
@@ -185,7 +185,7 @@ export default function Home() {
             "rating" : 4.5
         },
         {
-            "package_id" : 2,
+            "package_id" : 12,
             "package_name" : "Best Of Singapore | FREE Universal Studio Tickets",
             "imageurl" : "/images/15.jpg",
             "duration_id" : 1,
@@ -194,7 +194,7 @@ export default function Home() {
             "rating" : 4.5
         },
         {
-            "package_id" : 3,
+            "package_id" : 13,
             "package_name" : "Singapore & Malaysia Trip | FREE Night Safari Experience",
             "imageurl" : "/images/16.jpg",
             "duration_id" : 1,
@@ -203,7 +203,7 @@ export default function Home() {
             "rating" : 4.5
         },
         {
-            "package_id" : 4,
+            "package_id" : 14,
             "package_name" : "Singapore Highlights | Group Tour Package",
             "imageurl" : "/images/17.jpg",
             "duration_id" : 1,

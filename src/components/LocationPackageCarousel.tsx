@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image'; // Importing Next.js Image component
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
-
+import Link from 'next/link'; // Import Link component for navigation
 interface Package {
   package_id: number;
   package_name: string;
@@ -112,8 +112,11 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
           style={{ overflowX: 'auto', overflowY: 'hidden' }} // Ensuring no vertical scrollbar
         >
           {location.packages.slice(scrollIndex, scrollIndex + itemsToShow).map((pkg) => (
+          
+           
             <div key={pkg.package_id} className="flex-none w-full sm:w-1/3 bg-white shadow-lg rounded-lg overflow-hidden">
               {/* Wrapper for the image with rounded corners */}
+              <Link href={`/packages/${pkg.package_id}`} target="_blank">
               <div className="w-full h-56 relative overflow-hidden rounded-t-lg">
                 <Image
                   src={pkg.imageurl}  // Image source URL
@@ -134,10 +137,13 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
                   <span className="text-xl font-bold text-green-600">INR {pkg.offer_price}</span>
                 </div>
               </div>
+              </Link>
             </div>
+            
           ))}
+          
         </div>
-
+        
         {/* Left Arrow */}
         <div className="absolute top-1/2 left-0 transform -translate-y-1/2">
           <button
@@ -157,8 +163,10 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
             <AiOutlineRight size={12} />
           </button>
         </div>
+        
       </div>
     </div>
+   
   );
 };
 
