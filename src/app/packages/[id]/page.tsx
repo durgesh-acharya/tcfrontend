@@ -1,7 +1,7 @@
 // app/packages/[id]/page.tsx
 
 'use client';  // This is a Client Component
-
+import React from 'react';
 import { useParams } from 'next/navigation'; // Import `useParams` from `next/navigation`
 
 const PackageDetail = () => {
@@ -10,7 +10,8 @@ const PackageDetail = () => {
 
   return (
     <div>
-      <h1>Package ID: {id}</h1>
+      <h1>Package ID: { id}</h1>
+    
     </div>
   );
 };

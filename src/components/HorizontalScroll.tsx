@@ -3,15 +3,18 @@ import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import Image from 'next/image'; // 
 
 interface LocationData {
-  imageUrl: string;
-  locationName: string;
+  locations_id : number,
+  locations_name : string,
+  locations_url : string,
+  locations_isactive: number
 }
 
 interface HorizontalScrollProps {
   locations: LocationData[];
+   onLocationClick: (id: number) => void;
 }
 
-const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ locations }) => {
+const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ locations, onLocationClick }) => {
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
     const scroll = (direction: 'left' | 'right') => {
@@ -23,6 +26,13 @@ const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ locations }) => {
           scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         }
       }
+    };
+
+    //handle location click
+
+    const handleLocationClick = (id: number) => {
+      // Call the parent's callback function when a location is clicked
+      onLocationClick(id);
     };
 
   return (
@@ -44,16 +54,17 @@ const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ locations }) => {
         <div
           key={index}
           className="flex-shrink-0 w-36 h-36 rounded-xl overflow-hidden"
+          onClick={() => handleLocationClick(location.locations_id)}
         >
           {/* Use Next.js Image component */}
           <Image
-            src={location.imageUrl}
-            alt={location.locationName}
+            src={`http://103.168.18.92${location.locations_url}`}
+            alt={location.locations_name}
             className="w-full h-3/4 object-cover rounded-xl"
             width={144}  // Width based on your layout
             height={108} // Height based on your layout
           />
-          <p className="text-center mt-1 text-sm text-bold text-black">{location.locationName}</p>
+          <p className="text-center mt-1 text-sm text-bold text-black">{location.locations_name}</p>
         </div>
       ))}
     </div>

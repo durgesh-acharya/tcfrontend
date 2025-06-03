@@ -97,8 +97,8 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
   const itemsToShow = windowWidth <= 640 ? 1 : 3; // Dynamically set items to show based on the screen width
 
   return (
-    <div className="container mx-auto my-6">
-      <div className="flex justify-between items-center mb-4 px-4">
+    <div className="mx-auto my-6 px-2 max-w-screen-xl">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">{location.location_name}</h2>
         <div className="flex items-center justify-center text-sm font-bold">
           <span>View All</span>
@@ -108,7 +108,7 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
       <div className="relative overflow-hidden"> {/* Add overflow-hidden here */}
         <div
           ref={carouselRef} // Reference to the scrollable container
-          className="flex space-x-4 px-4 hide-scrollbar"
+          className="flex space-x-2 px-2 hide-scrollbar"
           style={{ overflowX: 'auto', overflowY: 'hidden' }} // Ensuring no vertical scrollbar
         >
           {location.packages.slice(scrollIndex, scrollIndex + itemsToShow).map((pkg) => (
@@ -119,7 +119,7 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
               <Link href={`/packages/${pkg.package_id}`} target="_blank">
               <div className="w-full h-56 relative overflow-hidden rounded-t-lg">
                 <Image
-                  src={pkg.imageurl}  // Image source URL
+                  src={`http://103.168.18.92${pkg.imageurl}`}  // Image source URL
                   alt={pkg.package_name}  // Alt text
                   layout="fill"  // Make the image fill the parent container
                   objectFit="cover"  // Ensure the image covers the area without distortion

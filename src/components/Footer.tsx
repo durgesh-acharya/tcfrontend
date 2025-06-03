@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-
+import Link from 'next/link'
 const Footer: React.FC = () => {
   return (
     <footer className="relative w-full bg-black py-10 mt-24">
@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
               <p className="text-sm text-gray-600 mt-1">About Us</p>
               <p className="text-sm text-gray-600 mt-1">We are Hiring</p>
               <p className="text-sm text-gray-600 mt-1">Reviews</p>
-              <p className="text-sm text-gray-600 mt-1">Blogs</p>
+              <Link href={"/blogs"} className="text-sm text-gray-600 mt-1">Blogs</Link>
               <p className="text-sm text-gray-600 mt-1">Terms & Conditions</p>
               <p className="text-sm text-gray-600 mt-1">Privacy Policies</p>
               <p className="text-sm text-gray-600 mt-1">Supports</p>

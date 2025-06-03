@@ -97,7 +97,7 @@ const LocationActivityCarousel: React.FC<{ location: Location }> = ({ location }
   const itemsToShow = windowWidth <= 640 ? 1 : 3; // Dynamically set items to show based on the screen width
 
   return (
-    <div className="container mx-auto my-6">
+    <div className="mx-auto my-6 px-2 max-w-screen-xl">
       <div className="flex justify-between items-center mb-4 px-4">
         <h2 className="text-xl font-semibold">{location.location_name}</h2>
         <div className='flex items-center justify-center text-sm font-bold'>
@@ -108,7 +108,7 @@ const LocationActivityCarousel: React.FC<{ location: Location }> = ({ location }
       <div className="relative overflow-hidden">
         <div
           ref={carouselRef} // Reference to the scrollable container
-          className="flex space-x-4 px-4 hide-scrollbar"
+          className="flex space-x-2 px-2 hide-scrollbar"
         >
           {location.activities.slice(scrollIndex, scrollIndex + itemsToShow).map((act) => (
             <div key={act.activity_id} className="flex-none w-full sm:w-1/3 bg-white shadow-lg rounded-lg overflow-hidden">
