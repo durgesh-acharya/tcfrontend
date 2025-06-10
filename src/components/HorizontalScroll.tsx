@@ -53,7 +53,7 @@ const HorizontalScroll: React.FC<HorizontalScrollProps> = ({ locations, onLocati
       {locations.map((location, index) => (
         <div
           key={index}
-          className="flex-shrink-0 w-36 h-36 rounded-xl overflow-hidden"
+          className="flex-shrink-0 w-36 h-36 rounded-xl overflow-hidden cursor-pointer"
           onClick={() => handleLocationClick(location.locations_id)}
         >
           {/* Use Next.js Image component */}

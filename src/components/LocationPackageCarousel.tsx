@@ -9,6 +9,8 @@ interface Package {
   duration_id: number;
   actual_price: string;
   offer_price: string;
+  destinationroute_id: number;
+  staycategories_id: number;
   rating: number;
 }
 
@@ -98,7 +100,7 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
 
   return (
     <div className="mx-auto my-6 px-2 max-w-screen-xl">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 px-2">
         <h2 className="text-xl font-semibold">{location.location_name}</h2>
         <div className="flex items-center justify-center text-sm font-bold">
           <span>View All</span>
@@ -116,7 +118,20 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
            
             <div key={pkg.package_id} className="flex-none w-full sm:w-1/3 bg-white shadow-lg rounded-lg overflow-hidden">
               {/* Wrapper for the image with rounded corners */}
-              <Link href={`/packages/${pkg.package_id}`} target="_blank">
+              <Link
+              href={{
+               pathname: `/packages/${pkg.package_id}`,
+               query: {
+              location_id: location.location_id,
+               duration_id: pkg.duration_id,
+                staycategory_id: pkg.staycategories_id,
+                destination_routeid: pkg.destinationroute_id
+               
+               }
+                }}
+              target="_blank"
+                >
+
               <div className="w-full h-56 relative overflow-hidden rounded-t-lg">
                 <Image
                   src={`http://103.168.18.92${pkg.imageurl}`}  // Image source URL
