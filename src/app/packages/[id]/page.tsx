@@ -65,6 +65,9 @@ const [transferData, setTransferData] = useState<any[]>([]);
   >([]);
 
   const [routes, setRoutes] = useState<{ id: number; route: string }[]>([]);
+  const [inclusion, setInclusion] = useState<string[]>([]);
+  const [exclusions, setExclusions] = useState<string[]>([]);
+  const [clauses, setClauses] = useState<string[]>([]);
 
   const categoryList = [
     { id: 1, category: "Standard" },
@@ -229,6 +232,54 @@ const fetchTripHighlights = async (pkgId: number) => {
     setTripHighlights([]);
   }
 };
+const fetchInclusion = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/tourinclusion/package/${pkgId}`);
+    const data = await res.json();
+    if (res.ok && data.status) {
+      const tags = data.data.map((item: any) => item.packageinclusion_inclusion);
+      setInclusion(tags);
+    } else {
+      setInclusion([]);
+    }
+  } catch (err) {
+    console.error("Error fetching includes:", err);
+    setInclusion([]);
+  }
+};
+
+// NEW: Fetch exclusions data function
+const fetchExclusions = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/tourexclusion/package/${pkgId}`);
+    const data = await res.json();
+    if (res.ok && data.status) {
+      const tags = data.data.map((item: any) => item.packageexclusion_exclusion);
+      setExclusions(tags);
+    } else {
+      setExclusions([]);
+    }
+  } catch (err) {
+    console.error("Error fetching exclusions:", err);
+    setExclusions([]);
+  }
+};
+
+const fetchClauses = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/knowbeforeyougo/package/${pkgId}`);
+    const data = await res.json();
+    if (res.ok && data.status) {
+      const list = data.data.map((item: any) => item.knowbeforeyougo_point);
+      setClauses(list);
+    } else {
+      setClauses([]);
+    }
+  } catch (err) {
+    console.error("Error fetching clauses:", err);
+    setClauses([]);
+  }
+};
   // ────────────────────────────────
   // Event Handlers
   // ────────────────────────────────
@@ -357,7 +408,9 @@ const fetchTransfers = async (pkgId: number) => {
       // fetchActivities(packageId);
       fetchStay(packageId);
       fetchTransfers(packageId);
-     
+      fetchInclusion(packageId);
+      fetchExclusions(packageId); 
+      fetchClauses(packageId);
     }
   }, [packageId]);
 
@@ -430,30 +483,30 @@ const fetchTransfers = async (pkgId: number) => {
   //   { day: 2, title: "Safari", transfertype: "Shared", transferdetail: "4x4 Jeep Safari", from: "Burj Khalifa", to: "Desert Safari" },
   // ];
 
-  const inclusions = [
-    'Round trip airfare',
-    'Hotel stay for 5 nights',
-    'Daily breakfast',
-    'City tour',
-    'Travel insurance',
-  ];
+  // const inclusions = [
+  //   'Round trip airfare',
+  //   'Hotel stay for 5 nights',
+  //   'Daily breakfast',
+  //   'City tour',
+  //   'Travel insurance',
+  // ];
 
-  const exclusions = [
-    'Personal expenses',
-    'Meals outside the package',
-    'Tips and gratuities',
-    'Visa fees',
-    'Optional activities',
-  ];
+  // const exclusions = [
+  //   'Personal expenses',
+  //   'Meals outside the package',
+  //   'Tips and gratuities',
+  //   'Visa fees',
+  //   'Optional activities',
+  // ];
 
-  const clauses = [
-    'Any breakage will be charged.',
-    'Airfare and visa not included.',
-    'Share passport on arrival.',
-    'No alcohol or drugs allowed.',
-    'Hotels subject to availability.',
-    'Travel insurance not included.',
-  ];
+  // const clauses = [
+  //   'Any breakage will be charged.',
+  //   'Airfare and visa not included.',
+  //   'Share passport on arrival.',
+  //   'No alcohol or drugs allowed.',
+  //   'Hotels subject to availability.',
+  //   'Travel insurance not included.',
+  // ];
 
   // ────────────────────────────────
   // Render
@@ -494,7 +547,7 @@ const fetchTransfers = async (pkgId: number) => {
   stayData={stayData}
   transferData={transferData} />
             <hr className="my-4 border-gray-300" />
-            <InclusionExclusion inclusions={inclusions} exclusions={exclusions} />
+            <InclusionExclusion inclusions={inclusion} exclusions={exclusions} />
             <hr className="my-4 border-gray-300" />
             <KnowBeforeYouGo clauses={clauses} />
           </div>
