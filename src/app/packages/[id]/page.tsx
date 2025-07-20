@@ -1,96 +1,81 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';  
-import React from 'react';
-import { useSearchParams, useParams } from 'next/navigation'; // Import `useParams` from `next/navigation`
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useParams } from 'next/navigation';
+
 import Navbar from '@/components/Navbar';
-import CategorySelector from "@/components/CategorySelector";
+import ImageGrid from '@/components/ImageGrid';
+import PackageTitle from "@/components/PackageTitle";
+import ItineraryHighlights from "@/components/ItineraryHighlights";
+import IncludedTags from "@/components/IncludedTags";
 import ChooseDuration from "@/components/ChooseDuration";
 import DestinationRoutes from "@/components/DestinationRoutes";
-
-import IncludedTags from "@/components/IncludedTags";
-import MultiTabView from "@/components/MultiTabView";
-import PackageTitle from "@/components/PackageTitle";
+import CategorySelector from "@/components/CategorySelector";
 import TripHighlights from "@/components/TripHighlights";
-import ImageGrid from "@/components/ImageGrid";
+import MultiTabView from "@/components/MultiTabView";
 import InclusionExclusion from "@/components/InclusionExclusion";
 import KnowBeforeYouGo from "@/components/KnowBeforeYoGo";
-import ItineraryHighlights from "@/components/ItineraryHighlights";
-
-import { useState, useEffect } from "react";
-
-
 
 const PackageDetail = () => {
-  
+  // ────────────────────────────────
+  // Route + Search Parameters
+  // ────────────────────────────────
   const params = useParams();
-  const { id } = params; // package ID from route
+  const { id } = params;
   const searchParams = useSearchParams();
 
-  // Query params (strings)
   const location_id = searchParams.get('location_id');
   const duration_id = searchParams.get('duration_id');
   const staycategory_id = searchParams.get('staycategory_id');
   const destination_routeid = searchParams.get('destination_routeid');
+  const locationduration_id = searchParams.get('locationduration_id');
 
-  // State: current selected filters and package data
+  const parsedLocationDurationId = locationduration_id ? parseInt(locationduration_id) : null;
+  // ────────────────────────────────
+  // State: Package & Related Data
+  // ────────────────────────────────
   const [packageId, setPackageId] = useState<number | null>(
     typeof id === 'string' ? parseInt(id) : Array.isArray(id) ? parseInt(id[0]) : null
   );
   const [packageData, setPackageData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchIncludes = async (pkgId: number) => {
-    try {
-      const res = await fetch(`http://103.168.18.92/api/include/package/${pkgId}`);
-      const data = await res.json();
-      
-      if (res.ok && data.status) {
-        const tags = data.data.map((item: any) => item.include_includtagname);
-        setIncludes(tags);
-      } else {
-        setIncludes([]); // clear on error or no data
-      }
-    } catch (err) {
-      console.error("Error fetching includes:", err);
-      setIncludes([]);
-    }
-  };
-  useEffect(() => {
-    if (packageId !== null) {
-      fetchIncludes(packageId);
-    }
-  }, [packageId]);
-    
-
-  // Local states for duration, route and category selections
-  // Initialize from URL params (parseInt + fallback)
-  const [selectedDuration, setSelectedDuration] = useState<number | null>(duration_id ? parseInt(duration_id) : null);
-  const [selectedRoute, setSelectedRoute] = useState<number | null>(destination_routeid ? parseInt(destination_routeid) : null);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(staycategory_id ? parseInt(staycategory_id) : null);
   const [includes, setIncludes] = useState<string[]>([]);
-  const [itineraryHighlights, setItineraryHighlights] = useState<Array<{ itineraryhighlights_id: number; itineraryhighlights_noofnifhts: number; itineraryhighlights_where: string }>>([]);
-  const fetchItineraryHighlights = async (pkgId: number) => {
-    try {
-      const res = await fetch(`http://103.168.18.92/api/itineraryhighlights/package/${pkgId}`);
-      const json = await res.json();
-      if (json.status) {
-        setItineraryHighlights(json.data);
-      } else {
-        setItineraryHighlights([]);
-      }
-    } catch (err) {
-      console.error("Failed to fetch itinerary highlights:", err);
-      setItineraryHighlights([]);
-    }
-  };
+  const [itineraryHighlights, setItineraryHighlights] = useState<
+    { itineraryhighlights_id: number; itineraryhighlights_noofnifhts: number; itineraryhighlights_where: string }[]
+  >([]);
 
-  // Run fetch on packageId change
-  useEffect(() => {
-    if (packageId !== null) {
-      fetchItineraryHighlights(packageId);
-    }
-  }, [packageId]);
-  // Fetch package data by params (location, duration, category, route)
+  // ────────────────────────────────
+  // State: User Selections (UI State)
+  // ────────────────────────────────
+  const [selectedDuration, setSelectedDuration] =  useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(staycategory_id ? parseInt(staycategory_id) : null);
+  const [selectedRoute, setSelectedRoute] = useState<number | null>(destination_routeid ? parseInt(destination_routeid) : null);
+  const [selectedLocationDurationId, setSelectedLocationDurationId] = useState<number | null>(null);
+  const [tripHighlights, setTripHighlights] = useState<string[]>([]);
+  const [fetchedItineraryData, setFetchedItineraryData] = useState<
+  { day: number; title: string; details: string }[]
+>([]);
+// const [activitiesData, setActivitiesData] = useState<any[]>([]);
+const [stayData, setStayData] = useState<any[]>([]);
+const [transferData, setTransferData] = useState<any[]>([]);
+
+  const [durations, setDurations] = useState<
+    { id: number; locationDurationId: number; duration: string; imageurl: string; startsfrom: string }[]
+  >([]);
+
+  const [routes, setRoutes] = useState<{ id: number; route: string }[]>([]);
+
+  const categoryList = [
+    { id: 1, category: "Standard" },
+    { id: 2, category: "Deluxe" },
+    { id: 3, category: "Luxury" },
+  ];
+
+  // ────────────────────────────────
+  // Fetch Functions
+  // ────────────────────────────────
+
   const fetchPackage = async (
     locationId: string,
     duration: number | null,
@@ -117,9 +102,8 @@ const PackageDetail = () => {
 
       const newPackage = data.data?.[0];
       if (newPackage) {
-        setPackageId(newPackage.packages_id);  // Update package ID state
-        setPackageData(newPackage);  
-        console.log(newPackage.packages_id);           // Update package data state
+        setPackageId(newPackage.packages_id);
+        setPackageData(newPackage);
       } else {
         setError('No package found for selected parameters');
       }
@@ -128,232 +112,403 @@ const PackageDetail = () => {
     }
   };
 
-  // Initial fetch when URL params load or change
-  useEffect(() => {
-    if (location_id && selectedDuration && selectedCategory && selectedRoute) {
-      fetchPackage(location_id, selectedDuration, selectedCategory, selectedRoute);
-    }
-  }, [location_id, selectedDuration, selectedCategory, selectedRoute]);
-
-  // Handler for duration change
-  const handleDurationSelect = (id: number) => {
-    setSelectedDuration(id);
-  };
-
-  // Handler for route change
-  const handleRouteSelect = (id: number | null) => {
-    setSelectedRoute(id);
-    // fetchPackage will trigger automatically via useEffect dependency
-  };
-
-  // Handler for category change
-  const handleCategorySelect = (id: number | null) => {
-    setSelectedCategory(id);
-    // fetchPackage will trigger automatically via useEffect dependency
-  };
-
-  
-  const [durations, setDurations] = useState<
-  { id: number; duration: string; imageurl: string; startsfrom: string }[]
->([]);
-
-const fetchDurationsByLocation = async (locationId: string) => {
-  try {
-    const res = await fetch(`http://103.168.18.92/api/locationdurations/location/${locationId}`);
-    const json = await res.json();
-
-    if (json.status && Array.isArray(json.data)) {
-      const formatted = json.data.map((item: any) => ({
-        id: item.locationdurations_durations_id,
-        duration: item.locationdurations_tags,
-        imageurl: item.locationdurations_imageurl,
-        startsfrom: item.locationdurations_startsfrom,
-      }));
-      setDurations(formatted);
-
-      // Set initial selection to first item if none selected yet
-      if (!selectedDuration && formatted.length > 0) {
-        setSelectedDuration(formatted[0].id);
-      }
-    } else {
-      setDurations([]);
-    }
-  } catch (err) {
-    console.error("Error fetching durations:", err);
-    setDurations([]);
-  }
-};
-
-useEffect(() => {
-  if (location_id) {
-    fetchDurationsByLocation(location_id);
-  }
-}, [location_id]);
- 
- 
-  
-const [routes, setRoutes] = useState<{ id: number; route: string }[]>([]);
-
-  // Fetch destination routes based on selectedDuration
-  const fetchRoutesByDuration = async (durationId: number) => {
+  const fetchIncludes = async (pkgId: number) => {
     try {
-      const res = await fetch(`http://103.168.18.92/api/destinationroutes/joined/location/${durationId}`);
+      const res = await fetch(`http://103.168.18.92/api/include/package/${pkgId}`);
+      const data = await res.json();
+      if (res.ok && data.status) {
+        const tags = data.data.map((item: any) => item.include_includtagname);
+        setIncludes(tags);
+      } else {
+        setIncludes([]);
+      }
+    } catch (err) {
+      console.error("Error fetching includes:", err);
+      setIncludes([]);
+    }
+  };
+
+  const fetchItineraryHighlights = async (pkgId: number) => {
+    try {
+      const res = await fetch(`http://103.168.18.92/api/itineraryhighlights/package/${pkgId}`);
       const json = await res.json();
       if (json.status) {
-        // Map API response to the shape DestinationRoutes expects
+        setItineraryHighlights(json.data);
+      } else {
+        setItineraryHighlights([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch itinerary highlights:", err);
+      setItineraryHighlights([]);
+    }
+  };
+
+  const fetchDurationsByLocation = async (locationId: string) => {
+    try {
+      const res = await fetch(`http://103.168.18.92/api/locationdurations/location/${locationId}`);
+      const json = await res.json();
+
+      if (json.status && Array.isArray(json.data)) {
+        const formatted = json.data.map((item: any) => ({
+          id: item.locationdurations_id,                    // ← used as selectedDuration
+  locationDurationId: item.locationdurations_id,   
+  durationId: item.locationdurations_durations_id,
+  duration: item.locationdurations_tags,
+  imageurl: item.locationdurations_imageurl,
+  startsfrom: item.locationdurations_startsfrom,
+        }));
+        setDurations(formatted);
+        const match = parsedLocationDurationId
+        ? formatted.find((d: { locationDurationId: number; }) => d.locationDurationId === parsedLocationDurationId)
+        : formatted[0];
+
+      if (match) {
+        setSelectedDuration(match.id);
+        setSelectedLocationDurationId(match.locationDurationId);
+      }
+
+      } else {
+        setDurations([]);
+      }
+    } catch (err) {
+      console.error("Error fetching durations:", err);
+      setDurations([]);
+    }
+  };
+
+  const fetchRoutesByDuration = async (locationDurationId: number) => {
+    try {
+      const res = await fetch(`http://103.168.18.92/api/destinationroutes/joined/location/${locationDurationId}`);
+      const json = await res.json();
+      if (json.status) {
         const formattedRoutes = json.data.map((item: any) => ({
           id: item.destinationroutes_id,
           route: item.destinationroutes_name,
         }));
+        console.log(`Fetching routes for ${locationDurationId}`);
         setRoutes(formattedRoutes);
+          // ✅ Set selectedRoute if not already set
+      // if (!selectedRoute) {
+      //   const match = destination_routeid
+      //     ? formattedRoutes.find((r: { id: number; }) => r.id === parseInt(destination_routeid))
+      //     : formattedRoutes[0];
+
+      //   if (match) {
+      //     setSelectedRoute(match.id);
+      //   }
+      // }
+      const routeIdFromUrl = destination_routeid ? parseInt(destination_routeid) : null;
+      const defaultRoute = routeIdFromUrl
+        ? formattedRoutes.find((r: { id: number }) => r.id === routeIdFromUrl)
+        : formattedRoutes[0];
+
+      if (defaultRoute) {
+        setSelectedRoute(defaultRoute.id);
+      }
       } else {
-        setRoutes([]); // empty array if no data or error
+        setRoutes([]);
       }
     } catch (err) {
       console.error("Error fetching routes:", err);
       setRoutes([]);
     }
   };
-
-  // Fetch routes whenever selectedDuration changes
-  useEffect(() => {
-    if (selectedDuration !== null) {
-      fetchRoutesByDuration(selectedDuration);
+// fetch trip highlights
+const fetchTripHighlights = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/triphighlights/package/${pkgId}`);
+    const json = await res.json();
+    if (res.ok && json.status) {
+      const highlights = json.data.map((item: any) => item.triphighlights_name);
+      setTripHighlights(highlights);
+    } else {
+      setTripHighlights([]);
     }
-  }, [selectedDuration]);
-  //  const [selectedRoute, setSelectedRoute] = useState<number | null>(routes[0].id); 
-  //  const handleRouteSelect = (id: number | null) => {
-  //   setSelectedRoute(id);
-  //   if (id && location_id && selectedDuration && selectedCategory) {
-  //     fetchPackage(location_id, selectedDuration, selectedCategory, id);
+  } catch (err) {
+    console.error("Error fetching trip highlights:", err);
+    setTripHighlights([]);
+  }
+};
+  // ────────────────────────────────
+  // Event Handlers
+  // ────────────────────────────────
+  const handleDurationSelect = (id: number) => {
+    setSelectedDuration(id);
+    const match = durations.find((d) => d.id === id);
+    if (match) {
+      setSelectedLocationDurationId(match.locationDurationId);
+    }
+  };
+
+  const handleRouteSelect = (id: number | null) => {
+    setSelectedRoute(id);
+  };
+
+  const handleCategorySelect = (id: number | null) => {
+    setSelectedCategory(id);
+  };
+//fetch itinerary
+const fetchItineraries = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/itineraries/package/${pkgId}`);
+    const json = await res.json();
+
+    if (res.ok && json.status) {
+      const formatted = json.data.map((item: any) => ({
+        day: item.itineraries_day,
+        title: item.itineraries_tiitle,
+        details: item.itineraries_description,
+      }));
+      setFetchedItineraryData(formatted);
+    } else {
+      setFetchedItineraryData([]);
+    }
+  } catch (err) {
+    console.error("Error fetching itineraries:", err);
+    setFetchedItineraryData([]);
+  }
+};
+// const fetchActivities = async (pkgId: number) => {
+//   try {
+//     const res = await fetch(`http://103.168.18.92/api/activities/package/${pkgId}`);
+//     const json = await res.json();
+//     if (res.ok && json.status) {
+//       const formatted = json.data.map((item: any) => ({
+//         day: item.day,
+//         title: item.title,
+//         isticketinclude: item.isticketinclude,
+//         // Map other fields as needed
+//       }));
+//       setActivitiesData(formatted);
+//     } else {
+//       setActivitiesData([]);
+//     }
+//   } catch (err) {
+//     console.error("Error fetching activities:", err);
+//     setActivitiesData([]);
+//   }
+// };
+
+const fetchStay = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/stays/package/${pkgId}`);
+    const json = await res.json();
+    if (res.ok && json.status) {
+      const formatted = json.data.map((item: any) => ({
+        id: item.stays_id,
+        day: parseInt(item.stays_day),
+        title: item.stays_title,
+        stayat: item.stays_stysat, // seems like a typo in API, but using as-is
+        checkintime: item.stays_checkin,
+        checkouttime: item.stays_checkout,
+        nights: parseInt(item.stays_numofnight),
+        breakfast: item.stays_isbreakfastinclude === 1,
+        lunch: item.stays_islunchinclude === 1,
+        dinner: item.stays_isdinnerinclude === 1,
+        image1:item.stays_image1,
+        image2:item.stays_image2
+      }));
+      console.log(formatted);
+      setStayData(formatted);
+    } else {
+      setStayData([]);
+    }
+  } catch (err) {
+    console.error("Error fetching stay data:", err);
+    setStayData([]);
+  }
+};
+
+const fetchTransfers = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/transfers/package/${pkgId}`);
+    const json = await res.json();
+
+    if (res.ok && json.status) {
+      const formatted = json.data.map((item: any) => ({
+        id: item.transfers_id,
+        day: parseInt(item.transfers_day),
+        title: item.transfers_title,
+        transfertype: item.transfers_type,
+        transferin: item.transfers_transferin, 
+        from: item.transfers_from,
+        to: item.transfers_to,
+      }));
+      setTransferData(formatted);
+    } else {
+      setTransferData([]);
+    }
+  } catch (err) {
+    console.error("Error fetching transfers:", err);
+    setTransferData([]);
+  }
+};
+
+
+  // ────────────────────────────────
+  // Effects
+  // ────────────────────────────────
+  useEffect(() => {
+    if (packageId !== null) {
+      fetchIncludes(packageId);
+      fetchItineraryHighlights(packageId);
+      fetchTripHighlights(packageId);
+      fetchItineraries(packageId);
+      // fetchActivities(packageId);
+      fetchStay(packageId);
+      fetchTransfers(packageId);
+     
+    }
+  }, [packageId]);
+
+  // useEffect(() => {
+  //   if (location_id && selectedDuration && selectedCategory && selectedRoute) {
+  //     fetchPackage(location_id, selectedDuration, selectedCategory, selectedRoute);
   //   }
-  // };
- 
-   const categoryList = [
-     { id: 1, category: "Standard" },
-     { id: 2, category: "Deluxe" },
-     { id: 3, category: "Luxury" },
-   ];
-  //  const [selectedCategory, setSelectedCategory] = useState<number | null>(1);
-  //  const handleCategorySelect = (id: number | null) => {
-  //   setSelectedCategory(id);
-  //   if (id && location_id && selectedDuration && selectedRoute) {
-  //     fetchPackage(location_id, selectedDuration, id, selectedRoute);
-  //   }
-  // };
- 
-   const itineraryData = [
-     { day: 1, title: "Arrival & City Tour", details: "Welcome to the city! Explore the main attractions, enjoy local cuisine, and relax at the hotel." },
-     { day: 2, title: "Adventure & Sightseeing", details: "Go on an adventure to the mountains, visit historical sites, and experience breathtaking views." },
-     { day: 3, title: "Leisure & Departure", details: "Spend the last day at leisure, shopping, or enjoying a spa before heading to the airport." },
-     { day: 4, title: "Back to Origin", details: "Back to origin from where trip begins." },
-   ];
- 
-   const activitiesData = [
-     { day: 1, title: "Burj Khalifa Tickets At the Top 124th 125th Floor - At the Top (Level 124 & 125) on a Private basis", isticketinclude: 1 },
-     { day: 2, title: "IMG Worlds Of Adventure Tickets, Dubai - IMG World of Adventure Tickets on a Private basis", isticketinclude: 1 } 
-   ];
- 
-   const stayData = [
-     { day: 1, title: "Welcome to Dubai, 'The Pearl of the Gulf' | Day at Leisure", stayat: "Check-in at Standard Hotel in Dubai", checkintime: "3:00PM", checkouttime: "12:00PM", nights: 4, breakfast: 1, lunch: 0, dinner: 0 }
-   ];
- 
-   const transferData = [
-     { day: 1, title: "Welcome to Dubai, 'The Pearl of the Gulf' | Day at Leisure", transfertype: "Private", transferdetail: "Transfer in Toyota Sienna, Toyota Previa or similar", from: "Dubai International Airport", to: "Standard Hotel in Dubai" },
-     { day: 2, title: "Visit the Iconic Burj Khalifa | Dubai Desert Safari with Bbq Dinner", transfertype: "Private", transferdetail: "Transfer in Toyota Sienna, Toyota Previa or similar", from: "Standard Hotel in Dubai", to: "Burj Khalifa Tickets At the Top 124th 125th Floor" },
-     { day: 2, title: "Visit the Iconic Burj Khalifa | Dubai Desert Safari with Bbq Dinner", transfertype: "Shared", transferdetail: "Transfer in 4x4 Land Cruiser Jeep", from: "Burj Khalifa Tickets At the Top 124th 125th Floor", to: "Dubai Desert Safari with BBQ Dinner" }
-   ];
- 
-   const inclusions = [
-     'Round trip airfare',
-     'Hotel stay for 5 nights',
-     'Daily breakfast',
-     'City tour',
-     'Travel insurance',
-   ];
-   
-   const exclusions = [
-     'Personal expenses',
-     'Meals outside the package',
-     'Tips and gratuities',
-     'Visa fees',
-     'Optional activities',
-   ];
- 
-   const clauses = [
-     'Any breakage or damage of any items in the resort/hotel will be charged at actuals.',
-     'All international and domestic airfare, visa fees, airport tax, or any kind of insurance cover is not a part of the package.',
-     'All foreign nationals must share their passport and visa details at the time of arrival.',
-     'Any personal expenses or items of personal nature will not be included in the package.',
-     'Do not consume alcoholic beverages or drugs, if you are found intoxicated, you might be asked to leave the tour/premises.',
-     'The hotels are subject to their availability. In case they are not available, the travelers will be accommodated in a property of similar standard.',
-     'Meals in the restaurants or cafes are not included.',
-     'Travel insurance is not included in the package.',
-     'Any activities or transfers not specified in the itinerary are not part of the package and require separate arrangements.'
-   ];
+  // }, [location_id, selectedDuration, selectedCategory, selectedRoute]);
+  useEffect(() => {
+    console.log("🔍 Ready to fetch:", {
+      location_id,
+      selectedDuration,
+      selectedCategory,
+      selectedRoute,
+    });
+    if (
+      location_id &&
+      selectedDuration !== null &&
+      selectedCategory !== null &&
+      selectedRoute !== null
+    ) {
+      fetchPackage(location_id, selectedDuration, selectedCategory, selectedRoute);
+    }
+  }, [location_id, selectedDuration, selectedCategory, selectedRoute]);
 
+  useEffect(() => {
+    if (location_id) {
+      fetchDurationsByLocation(location_id);
+    }
+  }, [location_id]);
 
+  useEffect(() => {
+    if (selectedLocationDurationId !== null) {
+      fetchRoutesByDuration(selectedLocationDurationId);
+    }
+  }, [selectedLocationDurationId]);
 
+  useEffect(() => {
+    if (!selectedCategory) {
+      const defaultCategory = staycategory_id
+        ? parseInt(staycategory_id)
+        : categoryList[0].id;
+  
+      setSelectedCategory(defaultCategory);
+    }
+  }, [staycategory_id, selectedCategory]);
+
+  // ────────────────────────────────
+  // Static / Sample Data
+  // ────────────────────────────────
+  // const itineraryData = [
+  //   { day: 1, title: "Arrival & City Tour", details: "Welcome to the city! Explore the main attractions, enjoy local cuisine, and relax at the hotel." },
+  //   { day: 2, title: "Adventure & Sightseeing", details: "Go on an adventure to the mountains, visit historical sites, and experience breathtaking views." },
+  //   { day: 3, title: "Leisure & Departure", details: "Spend the last day at leisure, shopping, or enjoying a spa before heading to the airport." },
+  //   { day: 4, title: "Back to Origin", details: "Back to origin from where trip begins." },
+  // ];
+
+  const activitiesData = [
+    { day: 1, title: "Burj Khalifa Tickets At the Top 124th 125th Floor - At the Top (Level 124 & 125) on a Private basis", isticketinclude: 1 },
+    { day: 2, title: "IMG Worlds Of Adventure Tickets, Dubai - IMG World of Adventure Tickets on a Private basis", isticketinclude: 1 }
+  ];
+
+  // const stayData = [
+  //   { day: 1, title: "Welcome to Dubai, 'The Pearl of the Gulf' | Day at Leisure", stayat: "Check-in at Standard Hotel in Dubai", checkintime: "3:00PM", checkouttime: "12:00PM", nights: 4, breakfast: 1, lunch: 0, dinner: 0 }
+  // ];
+
+  // const transferData = [
+  //   { day: 1, title: "Welcome to Dubai", transfertype: "Private", transferdetail: "Transfer in Toyota Sienna", from: "Airport", to: "Hotel" },
+  //   { day: 2, title: "Visit Burj Khalifa", transfertype: "Private", transferdetail: "Transfer to Burj Khalifa", from: "Hotel", to: "Burj Khalifa" },
+  //   { day: 2, title: "Safari", transfertype: "Shared", transferdetail: "4x4 Jeep Safari", from: "Burj Khalifa", to: "Desert Safari" },
+  // ];
+
+  const inclusions = [
+    'Round trip airfare',
+    'Hotel stay for 5 nights',
+    'Daily breakfast',
+    'City tour',
+    'Travel insurance',
+  ];
+
+  const exclusions = [
+    'Personal expenses',
+    'Meals outside the package',
+    'Tips and gratuities',
+    'Visa fees',
+    'Optional activities',
+  ];
+
+  const clauses = [
+    'Any breakage will be charged.',
+    'Airfare and visa not included.',
+    'Share passport on arrival.',
+    'No alcohol or drugs allowed.',
+    'Hotels subject to availability.',
+    'Travel insurance not included.',
+  ];
+
+  // ────────────────────────────────
+  // Render
+  // ────────────────────────────────
   return (
     <>
-    <Navbar />
-    <div className="mt-6 mx-6 md:px-10 flex-col md:flex-row">
-     
-     <ImageGrid />
+      <Navbar />
+      <div className="mt-6 mx-6 md:px-10 flex-col md:flex-row">
+        <ImageGrid />
 
-     {/* Main Content Section */}
-     <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden mt-6">
-       {/* Left Section */}
-       <div className="md:w-3/5 w-full p-6">
-       <PackageTitle title={packageData?.packages_name || "Loading Package..."} />
-         {/* <DurationCapsuel /> */}
-         {/* <ItineraryHighlights itinerary={itineraryhighlightData} /> */}
-         <ItineraryHighlights itinerary={itineraryHighlights.map(item => ({
-        location: item.itineraryhighlights_where,
-        nights: item.itineraryhighlights_noofnifhts
-      }))} />
-         <hr className="my-4 border-gray-300" />
+        <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden mt-6">
+          <div className="md:w-3/5 w-full p-6">
+            <PackageTitle title={packageData?.packages_name || "Loading Package..."} />
+            <ItineraryHighlights itinerary={itineraryHighlights.map(item => ({
+              location: item.itineraryhighlights_where,
+              nights: item.itineraryhighlights_noofnifhts
+            }))} />
+            <hr className="my-4 border-gray-300" />
+            <IncludedTags items={includes} />
+            <hr className="my-4 border-gray-300" />
+            <ChooseDuration
+              items={durations}
+               selectedId={selectedDuration}
+              onSelectionChange={handleDurationSelect}
+                />
+            <hr className="my-4 border-gray-300" />
+            <DestinationRoutes
+  routes={routes}
+  selectedId={selectedRoute} // 👈 Pass the selectedRoute here
+  onSelectionChange={handleRouteSelect}
+/>
+            <hr className="my-4 border-gray-300" />
+            <CategorySelector categories={categoryList} onCategorySelect={handleCategorySelect}  selectedCategory={selectedCategory} />
+            <hr className="my-4 border-gray-300" />
+            <TripHighlights highlights={tripHighlights}  />
+            <hr className="my-4 border-gray-300" />
+            <MultiTabView itineraryData={fetchedItineraryData} activityData={activitiesData}
+  stayData={stayData}
+  transferData={transferData} />
+            <hr className="my-4 border-gray-300" />
+            <InclusionExclusion inclusions={inclusions} exclusions={exclusions} />
+            <hr className="my-4 border-gray-300" />
+            <KnowBeforeYouGo clauses={clauses} />
+          </div>
 
-         <IncludedTags items={includes} />
-
-         <hr className="my-4 border-gray-300" />
-
-         {/* <ChooseDuration items={durations} onSelectionChange={handleDurationSelect} /> */}
-         <ChooseDuration items={durations} onSelectionChange={handleDurationSelect} />
-         <hr className="my-4 border-gray-300" />
-
-         <DestinationRoutes routes={routes} onSelectionChange={handleRouteSelect} />
-
-         <hr className="my-4 border-gray-300" />
-
-         <CategorySelector categories={categoryList} onCategorySelect={handleCategorySelect} />
-
-         <hr className="my-4 border-gray-300" />
-
-         <TripHighlights />
-
-         <hr className="my-4 border-gray-300" />
-
-         <MultiTabView itineraryData={itineraryData} activityData={activitiesData} stayData={stayData} transferData={transferData} />
-         <hr className="my-4 border-gray-300" />
-         <InclusionExclusion inclusions={inclusions} exclusions={exclusions} />
-         <hr className="my-4 border-gray-300" />
-         <KnowBeforeYouGo clauses={clauses} />
-         
-       </div>
-
-       {/* Right Section (Price and Book Button) */}
-       <div className="md:w-2/5 w-full p-6 bg-white border border-gray-200 h-36">
-         <div className="text-xl font-semibold text-black mb-4">
-           Rs. {packageData?.packages_offerprice || "Loading Package..."}/- per adult
-         </div>
-         <button className="w-full bg-black text-white py-2 rounded-md hover:bg-blue-600 transition">
-           Send Inquiry
-         </button>
-       </div>
-     </div>
-   </div>
-    
+          <div className="md:w-2/5 w-full p-6 bg-white border border-gray-200 h-36">
+            <div className="text-xl font-semibold text-black mb-4">
+              Rs. {packageData?.packages_offerprice || "Loading Package..."}/- per adult
+            </div>
+            <button className="w-full bg-black text-white py-2 rounded-md hover:bg-blue-600 transition">
+              Send Inquiry
+            </button>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

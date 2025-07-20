@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 interface ChooseDurationProps {
-  items: { id: number; duration: string; imageurl : string ; startsfrom : string }[];
+  items: { id: number; duration: string; imageurl: string; startsfrom: string }[];
   onSelectionChange: (id: number) => void;
+  selectedId?: number | null; // <--- NEW PROP
 }
 
-const ChooseDuration: React.FC<ChooseDurationProps> = ({ items, onSelectionChange }) => {
+const ChooseDuration: React.FC<ChooseDurationProps> = ({ items, onSelectionChange, selectedId: initialSelectedId }) => {
   // Set default selectedId to the first item's id (if available)
   const [selectedId, setSelectedId] = useState<number | null>(items.length > 0 ? items[0].id : null);
 
@@ -14,6 +15,13 @@ const ChooseDuration: React.FC<ChooseDurationProps> = ({ items, onSelectionChang
       onSelectionChange(selectedId);
     }
   }, [selectedId, onSelectionChange]);
+
+  useEffect(() => {
+    // Sync internal state with prop when it changes
+    if (initialSelectedId !== undefined && initialSelectedId !== selectedId) {
+      setSelectedId(initialSelectedId);
+    }
+  }, [initialSelectedId]);
 
   const handleSelection = (id: number) => {
     setSelectedId(id);

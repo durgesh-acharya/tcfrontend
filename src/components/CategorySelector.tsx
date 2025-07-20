@@ -8,17 +8,18 @@ interface Category {
 interface CategorySelectorProps {
   categories: Category[];
   onCategorySelect: (categoryId: number | null) => void;
+  selectedCategory: number | null;
 }
 
 const CategorySelector: React.FC<CategorySelectorProps> = ({ 
   categories, 
-  onCategorySelect 
+  onCategorySelect,
+  selectedCategory
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(1); // Default selected is 1
-
+ 
   const handleSelectCategory = (id: number) => {
-    const newSelected = id === selectedCategory ? null : id; // Toggle selection
-    setSelectedCategory(newSelected);
+   
+    const newSelected = id === selectedCategory ? null : id;
     onCategorySelect(newSelected);
   };
 

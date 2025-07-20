@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { FaMapMarkerAlt } from 'react-icons/fa';
 
 interface TransfersProps {
-    transferData: { day: number; title: string; transfertype : string, transferdetail : string, from : string, to: string }[];
+    transferData: { day: number; title: string; transfertype : string, transferin : string, from : string, to: string }[];
   }
 
  
@@ -40,7 +40,7 @@ const Transfers: React.FC<TransfersProps> = ({ transferData }) => {
                 {/* divider */}
                 <hr className="my-4 border-gray-300 mx-4" />
                 <h6 className="mx-4 text-sm text-navbarcolor text-semibold">{item.transfertype} Transfer</h6>
-                <h6 className="mx-4 text-lg text-navbarcolor text-sbold py-2">{item.transferdetail}</h6>
+                <h6 className="mx-4 text-lg text-navbarcolor text-sbold py-2">{item.transferin}</h6>
                 {/* divider */}
                 <hr className="my-4 border-gray-300 mx-4" />
                 <div className="flex items-center space-x-8">

@@ -10,8 +10,8 @@ import Transfers from "./Transfers";
 interface MultiTabViewProps {
   itineraryData: { day: number; title: string; details: string }[];  // Inline type definition for the prop
   activityData: { day: number; title: string; isticketinclude: number }[];
-  stayData : {day : number, title : string, stayat: string,checkintime : string,checkouttime : string,nights:number,breakfast : number,lunch : number, dinner : number}[];
-  transferData: { day: number; title: string; transfertype : string, transferdetail : string, from : string, to: string }[];
+  stayData : {id:number,day : number, title : string, stayat: string,checkintime : string,checkouttime : string,nights:number,breakfast : number,lunch : number, dinner : number,image1 :string, image2 : string}[];
+  transferData: { day: number; title: string; transfertype : string, transferin : string, from : string, to: string }[];
 }
 
 const MultiTabView: React.FC<MultiTabViewProps> = ({ itineraryData, activityData, stayData, transferData }) => {
