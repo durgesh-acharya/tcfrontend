@@ -60,9 +60,16 @@ const PackageDetail = () => {
 const [stayData, setStayData] = useState<any[]>([]);
 const [transferData, setTransferData] = useState<any[]>([]);
 
-  const [durations, setDurations] = useState<
-    { id: number; locationDurationId: number; duration: string; imageurl: string; startsfrom: string }[]
-  >([]);
+const [durations, setDurations] = useState<
+  {
+    id: number;                    // same as locationDurationId
+    locationDurationId: number;
+    durationId: number;           // 👈 Add this line
+    duration: string;
+    imageurl: string;
+    startsfrom: string;
+  }[]
+>([]);
 
   const [routes, setRoutes] = useState<{ id: number; route: string }[]>([]);
   const [inclusion, setInclusion] = useState<string[]>([]);
@@ -318,11 +325,16 @@ const fetchClauses = async (pkgId: number) => {
   // ────────────────────────────────
   // Event Handlers
   // ────────────────────────────────
+
+
   const handleDurationSelect = (id: number) => {
     setSelectedDuration(id);
     const match = durations.find((d) => d.id === id);
     if (match) {
       setSelectedLocationDurationId(match.locationDurationId);
+      
+      // 👇 Set this explicitly so it fetches the correct package
+      fetchPackage(location_id!, match.durationId, selectedCategory, selectedRoute);
     }
   };
 
