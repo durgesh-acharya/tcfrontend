@@ -29,8 +29,8 @@ const PackageDetail = () => {
   const staycategory_id = searchParams.get('staycategory_id');
   const destination_routeid = searchParams.get('destination_routeid');
   const locationduration_id = searchParams.get('locationduration_id');
-
-  const parsedLocationDurationId = locationduration_id ? parseInt(locationduration_id) : null;
+  const parsedDurationId = duration_id ? parseInt(duration_id) : null;
+  // const parsedLocationDurationId = locationduration_id ? parseInt(locationduration_id) : null;
   // ────────────────────────────────
   // State: Package & Related Data
   // ────────────────────────────────
@@ -48,7 +48,7 @@ const PackageDetail = () => {
   // ────────────────────────────────
   // State: User Selections (UI State)
   // ────────────────────────────────
-  const [selectedDuration, setSelectedDuration] =  useState<number | null>(null);
+  const [selectedDuration, setSelectedDuration] =  useState<number | null>(duration_id ? parseInt(duration_id) : null);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(staycategory_id ? parseInt(staycategory_id) : null);
   const [selectedRoute, setSelectedRoute] = useState<number | null>(destination_routeid ? parseInt(destination_routeid) : null);
   const [selectedLocationDurationId, setSelectedLocationDurationId] = useState<number | null>(null);
@@ -146,30 +146,65 @@ const [transferData, setTransferData] = useState<any[]>([]);
     }
   };
 
+  // const fetchDurationsByLocation = async (locationId: string) => {
+  //   try {
+  //     const res = await fetch(`http://103.168.18.92/api/locationdurations/location/${locationId}`);
+  //     const json = await res.json();
+
+  //     if (json.status && Array.isArray(json.data)) {
+  //       const formatted = json.data.map((item: any) => ({
+  //         id: item.locationdurations_id,                    // ← used as selectedDuration
+  // locationDurationId: item.locationdurations_id,   
+  // durationId: item.locationdurations_durations_id,
+  // duration: item.locationdurations_tags,
+  // imageurl: item.locationdurations_imageurl,
+  // startsfrom: item.locationdurations_startsfrom,
+  //       }));
+  //       setDurations(formatted);
+  //       const match = parsedLocationDurationId
+  //       ? formatted.find((d: { locationDurationId: number; }) => d.locationDurationId === parsedLocationDurationId)
+  //       : formatted[0];
+
+  //     if (match) {
+  //       setSelectedDuration(match.id);
+  //       setSelectedLocationDurationId(match.locationDurationId);
+  //     }
+
+  //     } else {
+  //       setDurations([]);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching durations:", err);
+  //     setDurations([]);
+  //   }
+  // };
   const fetchDurationsByLocation = async (locationId: string) => {
     try {
       const res = await fetch(`http://103.168.18.92/api/locationdurations/location/${locationId}`);
       const json = await res.json();
-
+  
       if (json.status && Array.isArray(json.data)) {
         const formatted = json.data.map((item: any) => ({
-          id: item.locationdurations_id,                    // ← used as selectedDuration
-  locationDurationId: item.locationdurations_id,   
-  durationId: item.locationdurations_durations_id,
-  duration: item.locationdurations_tags,
-  imageurl: item.locationdurations_imageurl,
-  startsfrom: item.locationdurations_startsfrom,
+          id: item.locationdurations_id,                    // UI selection ID
+          locationDurationId: item.locationdurations_id,
+          durationId: item.locationdurations_durations_id,  // 👈 This is important
+          duration: item.locationdurations_tags,
+          imageurl: item.locationdurations_imageurl,
+          startsfrom: item.locationdurations_startsfrom,
         }));
+  
         setDurations(formatted);
-        const match = parsedLocationDurationId
-        ? formatted.find((d: { locationDurationId: number; }) => d.locationDurationId === parsedLocationDurationId)
-        : formatted[0];
-
-      if (match) {
-        setSelectedDuration(match.id);
-        setSelectedLocationDurationId(match.locationDurationId);
-      }
-
+  
+        // ✅ Select default based on parsedDurationId from URL
+        const defaultMatch = parsedDurationId
+          ? formatted.find((d: { durationId: number; }) => d.durationId === parsedDurationId)
+          : formatted[0];
+  
+        if (defaultMatch) {
+          setSelectedDuration(defaultMatch.id);
+          setSelectedLocationDurationId(defaultMatch.locationDurationId);
+        }
+  
       } else {
         setDurations([]);
       }
