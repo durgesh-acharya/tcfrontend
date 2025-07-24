@@ -148,9 +148,12 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
                   <span>Rating: {pkg.rating}</span>
                 </div>
                 <h3 className="mt-2 text-lg font-semibold">{pkg.package_name}</h3>
-                <div className="flex justify-between items-center mt-2">
+                <div className="flex flex-col items-end mt-2">
                   <span className="text-sm line-through text-gray-500">INR {pkg.actual_price}</span>
-                  <span className="text-xl font-bold text-green-600">INR {pkg.offer_price}</span>
+                  <span className="text-xl font-bold text-green-600">
+    INR {pkg.offer_price}/
+    <span className="text-xs text-gray-500 ml-1">Adult</span>
+  </span>
                 </div>
               </div>
               </Link>
