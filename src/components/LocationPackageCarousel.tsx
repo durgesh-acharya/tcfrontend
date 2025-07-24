@@ -12,6 +12,7 @@ interface Package {
   destinationroute_id: number;
   staycategories_id: number;
   rating: number;
+  duration_tags : string
 }
 
 interface Location {
@@ -143,7 +144,7 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
               </div>
               <div className="px-4 py-2">
                 <div className="flex justify-between text-sm text-gray-500">
-                  {/* <span>Duration: {pkg.duration_id} days</span> */}
+                  <span>Duration: {pkg.duration_tags}</span>
                   <span>Rating: {pkg.rating}</span>
                 </div>
                 <h3 className="mt-2 text-lg font-semibold">{pkg.package_name}</h3>
