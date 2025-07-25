@@ -104,7 +104,9 @@ const LocationPackageCarousel: React.FC<{ location: Location }> = ({ location })
       <div className="flex justify-between items-center mb-4 px-2">
         <h2 className="text-xl font-semibold">{location.location_name}</h2>
         <div className="flex items-center justify-center text-sm font-bold">
-          <span>View All</span>
+        <Link href={`/destinations/${location.location_id}`} className="text-blue-600 hover:underline">
+           View All
+        </Link>
         </div>
       </div>
 
