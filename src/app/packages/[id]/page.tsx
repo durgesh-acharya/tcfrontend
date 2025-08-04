@@ -59,7 +59,7 @@ const PackageDetail = () => {
 // const [activitiesData, setActivitiesData] = useState<any[]>([]);
 const [stayData, setStayData] = useState<any[]>([]);
 const [transferData, setTransferData] = useState<any[]>([]);
-
+const [packageImages, setPackageImages] = useState<{ url: string; category: number }[]>([]);
 const [durations, setDurations] = useState<
   {
     id: number;                    // same as locationDurationId
@@ -322,6 +322,27 @@ const fetchClauses = async (pkgId: number) => {
     setClauses([]);
   }
 };
+
+//function to fetch images
+const fetchPackageImages = async (pkgId: number) => {
+  try {
+    const res = await fetch(`http://103.168.18.92/api/packageimages/by-package/${pkgId}`);
+    const json = await res.json();
+
+    if (res.ok && json.status) {
+      const formatted = json.data.map((item: any) => ({
+        url: item.packageimages_url,
+        category: item.packageimages_category,
+      }));
+      setPackageImages(formatted);
+    } else {
+      setPackageImages([]);
+    }
+  } catch (err) {
+    console.error("Error fetching package images:", err);
+    setPackageImages([]);
+  }
+};
   // ────────────────────────────────
   // Event Handlers
   // ────────────────────────────────
@@ -458,6 +479,7 @@ const fetchTransfers = async (pkgId: number) => {
       fetchInclusion(packageId);
       fetchExclusions(packageId); 
       fetchClauses(packageId);
+      fetchPackageImages(packageId);
     }
   }, [packageId]);
 
@@ -505,55 +527,14 @@ const fetchTransfers = async (pkgId: number) => {
     }
   }, [staycategory_id, selectedCategory]);
 
-  // ────────────────────────────────
-  // Static / Sample Data
-  // ────────────────────────────────
-  // const itineraryData = [
-  //   { day: 1, title: "Arrival & City Tour", details: "Welcome to the city! Explore the main attractions, enjoy local cuisine, and relax at the hotel." },
-  //   { day: 2, title: "Adventure & Sightseeing", details: "Go on an adventure to the mountains, visit historical sites, and experience breathtaking views." },
-  //   { day: 3, title: "Leisure & Departure", details: "Spend the last day at leisure, shopping, or enjoying a spa before heading to the airport." },
-  //   { day: 4, title: "Back to Origin", details: "Back to origin from where trip begins." },
-  // ];
+ 
 
   const activitiesData = [
     { day: 1, title: "Burj Khalifa Tickets At the Top 124th 125th Floor - At the Top (Level 124 & 125) on a Private basis", isticketinclude: 1 },
     { day: 2, title: "IMG Worlds Of Adventure Tickets, Dubai - IMG World of Adventure Tickets on a Private basis", isticketinclude: 1 }
   ];
 
-  // const stayData = [
-  //   { day: 1, title: "Welcome to Dubai, 'The Pearl of the Gulf' | Day at Leisure", stayat: "Check-in at Standard Hotel in Dubai", checkintime: "3:00PM", checkouttime: "12:00PM", nights: 4, breakfast: 1, lunch: 0, dinner: 0 }
-  // ];
-
-  // const transferData = [
-  //   { day: 1, title: "Welcome to Dubai", transfertype: "Private", transferdetail: "Transfer in Toyota Sienna", from: "Airport", to: "Hotel" },
-  //   { day: 2, title: "Visit Burj Khalifa", transfertype: "Private", transferdetail: "Transfer to Burj Khalifa", from: "Hotel", to: "Burj Khalifa" },
-  //   { day: 2, title: "Safari", transfertype: "Shared", transferdetail: "4x4 Jeep Safari", from: "Burj Khalifa", to: "Desert Safari" },
-  // ];
-
-  // const inclusions = [
-  //   'Round trip airfare',
-  //   'Hotel stay for 5 nights',
-  //   'Daily breakfast',
-  //   'City tour',
-  //   'Travel insurance',
-  // ];
-
-  // const exclusions = [
-  //   'Personal expenses',
-  //   'Meals outside the package',
-  //   'Tips and gratuities',
-  //   'Visa fees',
-  //   'Optional activities',
-  // ];
-
-  // const clauses = [
-  //   'Any breakage will be charged.',
-  //   'Airfare and visa not included.',
-  //   'Share passport on arrival.',
-  //   'No alcohol or drugs allowed.',
-  //   'Hotels subject to availability.',
-  //   'Travel insurance not included.',
-  // ];
+  
 
   // ────────────────────────────────
   // Render
@@ -562,7 +543,7 @@ const fetchTransfers = async (pkgId: number) => {
     <>
       <Navbar />
       <div className="mt-6 mx-6 md:px-10 flex-col md:flex-row">
-        <ImageGrid />
+      <ImageGrid images={packageImages} />
 
         <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden mt-6">
           <div className="md:w-3/5 w-full p-6">
