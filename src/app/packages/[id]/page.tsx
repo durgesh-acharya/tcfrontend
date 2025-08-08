@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useParams } from 'next/navigation';
 
+
 import Navbar from '@/components/Navbar';
 import ImageGrid from '@/components/ImageGrid';
 import PackageTitle from "@/components/PackageTitle";
@@ -543,7 +544,8 @@ const fetchTransfers = async (pkgId: number) => {
     <>
       <Navbar />
       <div className="mt-6 mx-6 md:px-10 flex-col md:flex-row">
-      <ImageGrid images={packageImages} />
+      <ImageGrid images={packageImages}   packageId={packageId}
+  categoryId={selectedCategory} />
 
         <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden mt-6">
           <div className="md:w-3/5 w-full p-6">
